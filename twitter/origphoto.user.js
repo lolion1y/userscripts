@@ -20,9 +20,21 @@
     'use strict';
 
     const config = {
+        imgsrc: GM_getValue("imgsrc", true),
         fullsize: GM_getValue("fullsize", true),
         preview: GM_getValue("preview", false)
     };
+
+    GM_registerMenuCommand(`Imgsrc (Current: ${config.imgsrc ? 'Enabled' : 'Disabled'})`, () => {
+        const userConfirm = confirm(`Do you want to ${config.imgsrc ? 'disable' : 'enable'} imgsrc?
+Current: ${config.imgsrc ? 'Enabled' : 'Disabled'}`);
+        if (userConfirm) {
+            config.imgsrc = !config.imgsrc;
+            config.imgsrc !== true
+                ? GM_setValue('imgsrc', config.imgsrc)
+                : GM_deleteValue('imgsrc');
+        }
+    });
 
     GM_registerMenuCommand(`Fullsize (Current: ${config.fullsize ? 'Enabled' : 'Disabled'})`, () => {
         const userConfirm = confirm(`Do you want to ${config.fullsize ? 'disable' : 'enable'} fullsize?
@@ -54,7 +66,7 @@ Current: ${config.preview ? 'Enabled' : 'Disabled'}`);
     };
 
     const replaceImgUrl = () => {
-        if (config.fullsize) {
+        if (config.imgsrc) {
             const images = document.querySelectorAll('[data-testid="tweetPhoto"] img,[data-testid="swipe-to-dismiss"] img');
             images.forEach((image) => {
                 const tweetImgUrl = getOrigImgUrl(image.src);
@@ -63,8 +75,18 @@ Current: ${config.preview ? 'Enabled' : 'Disabled'}`);
                 }
             });
         }
+        if (config.fullsize) {
+            const tweets = document.querySelectorAll('[data-testid="tweetPhoto"] > div[style^="background-image"],[data-testid="swipe-to-dismiss"] > div > div > div div[style*="background-image"]');
+            tweets.forEach((tweet) => {
+                const backgroundImage = tweet.style.backgroundImage.replace(/^url\(["']|["']\)$/gi, '');
+                const tweetImgUrl = getOrigImgUrl(backgroundImage);
+                if (tweetImgUrl && backgroundImage !== tweetImgUrl) {
+                    tweet.style.backgroundImage = `url(${tweetImgUrl})`;
+                }
+            });
+        }
         if (config.preview) {
-            const tweets = document.querySelectorAll('[data-testid="tweetPhoto"] > div[style^="background-image"],[data-testid="swipe-to-dismiss"] > div > div > div > div[style^="background-image"]');
+            const tweets = document.querySelectorAll('[data-testid="tweetPhoto"] > div[style*="background-image"]');
             tweets.forEach((tweet) => {
                 const backgroundImage = tweet.style.backgroundImage.replace(/^url\(["']|["']\)$/gi, '');
                 const tweetImgUrl = getOrigImgUrl(backgroundImage);
