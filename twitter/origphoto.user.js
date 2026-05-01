@@ -22,7 +22,10 @@
     const config = {
         imgsrc: GM_getValue("imgsrc", true),
         fullsize: GM_getValue("fullsize", true),
-        preview: GM_getValue("preview", false)
+        preview: GM_getValue("preview", false),
+        videoimgsrc: GM_getValue("videoimgsrc", true),
+        videofullsize: GM_getValue("videofullsize", false),
+        videopreview: GM_getValue("videopreview", false)
     };
 
     GM_registerMenuCommand(`Imgsrc (Current: ${config.imgsrc ? 'Enabled' : 'Disabled'})`, () => {
@@ -59,7 +62,7 @@ Current: ${config.preview ? 'Enabled' : 'Disabled'}`);
     });
 
     const getOrigImgUrl = (imgUrl) => {
-        const match = imgUrl.match(/https:\/\/(pbs\.twimg\.com\/media\/[a-zA-Z0-9\-\_]+)(\?format=|\.)(jpg|png|webp)/);
+        const match = imgUrl.match(/https:\/\/(pbs\.twimg\.com\/(?:media|amplify_video_thumb\/\d+\/img)\/[a-zA-Z0-9\-\_]+)(\?format=|\.)(jpg|png|webp)/);
         if (!match) return;
         const format = match[3] === 'webp' ? 'jpg' : match[3];
         return `https://${match[1]}.${format}?name=orig`;
@@ -87,6 +90,34 @@ Current: ${config.preview ? 'Enabled' : 'Disabled'}`);
         }
         if (config.preview) {
             const tweets = document.querySelectorAll('[data-testid="tweetPhoto"] > div[style*="background-image"]');
+            tweets.forEach((tweet) => {
+                const backgroundImage = tweet.style.backgroundImage.replace(/^url\(["']|["']\)$/gi, '');
+                const tweetImgUrl = getOrigImgUrl(backgroundImage);
+                if (tweetImgUrl && backgroundImage !== tweetImgUrl) {
+                    tweet.style.backgroundImage = `url(${tweetImgUrl})`;
+                }
+            });
+        }
+        if (config.videoimgsrc) {
+            const images = document.querySelectorAll('[data-testid="previewInterstitial"] img');
+            images.forEach((image) => {
+                const tweetImgUrl = getOrigImgUrl(image.src);
+                if (tweetImgUrl && image.src !== tweetImgUrl) {
+                    image.src = tweetImgUrl;
+                }
+            });
+        }
+        if (config.videofullsize) {
+            const videos = document.querySelectorAll('[data-testid="videoComponent"] video');
+            videos.forEach((video) => {
+                const tweetImgUrl = getOrigImgUrl(video.poster);
+                if (tweetImgUrl && video.poster !== tweetImgUrl) {
+                    video.poster = tweetImgUrl;
+                }
+            });
+        }
+        if (config.videopreview) {
+            const tweets = document.querySelectorAll('[data-testid="previewInterstitial"] > div > div > div[style*="background-image"]');
             tweets.forEach((tweet) => {
                 const backgroundImage = tweet.style.backgroundImage.replace(/^url\(["']|["']\)$/gi, '');
                 const tweetImgUrl = getOrigImgUrl(backgroundImage);
