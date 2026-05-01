@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter original images
 // @namespace    http://tampermonkey.net/
-// @version      1.8
+// @version      1.9
 // @description  View original quality images.
 // @author       lolion1y
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=twitter.com
