@@ -166,6 +166,7 @@ var TreeNode = /** @class */ (function () {
                 value.length = inner.length = inner.children.reduce(function (aac, val) { return aac + val.length; }, 0);
                 inner.text = value.toString(); //update text with size info
                 inner.state.opened = false;
+                ret.length += inner.length;
                 ret.children.push(inner);
             }
             for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
@@ -178,6 +179,8 @@ var TreeNode = /** @class */ (function () {
                 });
             }
         }
+        this.length = ret.length;
+        ret.text = this.toString();
         return ret;
     };
     TreeNode.prototype.add = function (key, value) {
@@ -260,6 +263,7 @@ var setupOpe = function () {
     setupOpe();
     var data = new TreeNode($(".topic-title > h3").text());
     var pattern = /^(.+?) (\d+(?:\.\d+)?[TGMK]?B(?:ytes)?)$/;
+    var sizeOnlyPattern = /^\s*-?\s*(\d+(?:\.\d+)?[TGMK]?B(?:ytes)?)$/;
     $(".file_list:first > ul li").each(function (index, value) {
         var text = $(value).text().trim();
         var line = text.replace(/\t+/i, "\t").split("\t");
@@ -272,10 +276,14 @@ var setupOpe = function () {
             case 1:
                 var ret = pattern.exec(text);
                 if (ret === null) {
-                    //the text should be "More Than 1000 Files"
-                    data.insert(line[0].split("/"), "");
-                }
-                else {
+                    var sizeOnly = sizeOnlyPattern.exec(text);
+                    if (sizeOnly !== null) {
+                        data.insert(["Unknown Filename"], sizeOnly[1].replace(/\s+/g, ""));
+                    } else {
+                        // the text should be "More Than 1000 Files"
+                        data.insert(line[0].split("/"), "0Bytes");
+                    }
+                } else {
                     data.insert(ret[1].split("/"), ret[2]);
                 }
                 break;
