@@ -53,6 +53,15 @@ https://raw.githubusercontent.com/lolion1y/userscripts/refs/heads/main/dmhy/tree
 https://raw.githubusercontent.com/lolion1y/userscripts/refs/heads/main/scene/overlaylink.user.js
 ```
 
+## GitHub
+> fix activity link on GitHub mobile web
+
+[Install](https://www.tampermonkey.net/script_installation.php#url=https://raw.githubusercontent.com/lolion1y/userscripts/refs/heads/main/github/activitymobi.user.js)
+
+```
+https://raw.githubusercontent.com/lolion1y/userscripts/refs/heads/main/github/activitymobi.user.js
+```
+
 [^1]: Thanks to https://greasyfork.org/en/scripts/482477-one-click-copy-link-button-for-twitter-x.
 [^2]: Thanks to https://greasyfork.org/en/scripts/482406-twitter-to-vxtwitter.
 [^3]: Thanks to https://greasyfork.org/en/scripts/26430-dmhy-tree-view
